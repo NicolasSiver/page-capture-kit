@@ -20,9 +20,21 @@ class Context {
     }
 
     click(selector) {
+        let clickHandler;
+
+        if (typeof selector === 'string') {
+            if (selector.startsWith('//') === true) {
+                clickHandler = this.page.$x(selector);
+            } else {
+                clickHandler = this.page.$(selector);
+            }
+        } else {
+            clickHandler = selector;
+        }
+
         return Promise.all([
             this.page.waitForNavigation(),
-            typeof selector === 'string' ? this.page.$(selector).click() : selector.click()
+            clickHandler.click()
         ]);
     }
 
@@ -37,12 +49,9 @@ class Context {
     }
 
     login(username, password) {
-        let auth = new Authentication(this.page);
-
         return Promise
             .resolve()
-            .then(() => auth.execute(username, password))
-            .then(() => this.click(auth.getLoginButtonSelector()));
+            .then(() => new Authentication(this.page).execute(username, password));
     }
 
     next() {
