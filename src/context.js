@@ -13,24 +13,28 @@ class Context {
     capture(fileName, pattern = 'yyyy-MM-dd--HH-mm-ss') {
         let name = `${fileName}-${format(new Date(), pattern)}.png`;
 
-        return Promise
-            .resolve()
-            .then(() => this.page.screenshot({
-                fullPage: true,
-                path    : path.resolve(this.outputPath, name),
-                type    : 'png'
-            }));
+        return () => {
+            return Promise
+                .resolve()
+                .then(() => this.page.screenshot({
+                    fullPage: true,
+                    path    : path.resolve(this.outputPath, name),
+                    type    : 'png'
+                }));
+        };
     }
 
     click(selector, navigation = true) {
-        return Promise.all([
-            navigation === true ? this.page.waitForNavigation() : Promise.resolve(),
-            this.getElementBySelector(selector).then(element => element.click())
-        ]);
+        return () => {
+            return Promise.all([
+                navigation === true ? this.page.waitForNavigation({waitUntil: ['networkidle2']}) : Promise.resolve(),
+                this.getElementBySelector(selector).then(element => element.click())
+            ]);
+        };
     }
 
     end() {
-        return ContextActions.END;
+        return () => ContextActions.END;
     }
 
     getElementBySelector(selector) {
@@ -50,7 +54,7 @@ class Context {
     }
 
     hover(selector) {
-        return this.getElementBySelector(selector).then(element => element.hover());
+        return () => this.getElementBySelector(selector).then(element => element.hover());
     }
 
     initWithPage(page) {
@@ -60,32 +64,42 @@ class Context {
     }
 
     login(username, password, twoStep = false) {
-        return Promise
-            .resolve()
-            .then(() => {
-                return new Authentication(this.page)
-                    .setTwoStep(twoStep)
-                    .execute(username, password);
-            });
+        return () => {
+            return Promise
+                .resolve()
+                .then(() => {
+                    return new Authentication(this.page)
+                        .setTwoStep(twoStep)
+                        .execute(username, password);
+                });
+        };
     }
 
     next() {
-        return ContextActions.NEXT;
+        return () => ContextActions.NEXT;
     }
 
     open(url) {
-        console.log('Visiting URL: ' + url);
-        return this.page.goto(url, {waitUntil: ['load', 'domcontentloaded', 'networkidle0']});
+        return () => {
+            console.log('Visiting URL: ' + url);
+            return this.page.goto(url, {waitUntil: ['load', 'domcontentloaded', 'networkidle2']});
+        };
     }
 
     series(...actions) {
         let chain = Promise.resolve();
 
         actions.forEach(action => {
-            chain = chain.then(() => action);
+            chain = chain.then(() => action());
         });
 
         return chain;
+    }
+
+    wait(condition) {
+        return () => {
+            return this.page.waitFor(condition);
+        };
     }
 }
 
