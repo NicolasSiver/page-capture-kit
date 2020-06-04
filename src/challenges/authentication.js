@@ -1,5 +1,7 @@
 const Promise = require('bluebird');
 
+const {logger} = require('../util/logger');
+
 class Authentication {
     constructor(page) {
         this.page = page;
@@ -47,7 +49,7 @@ class Authentication {
                     return Promise
                         .resolve()
                         .then(() => {
-                            console.log('Username field is found. Typing provided username...');
+                            logger.log('Username field is found. Typing provided username...');
                             return inputElement.type(username);
                         })
                         .then(() => inputElement.press('Enter'));
@@ -62,7 +64,7 @@ class Authentication {
                     return Promise
                         .resolve()
                         .then(() => {
-                            console.log('Password field is found. Typing provided password...');
+                            logger.log('Password field is found. Typing provided password...');
                             return inputElement.type(password);
                         })
                         .then(() => {
@@ -71,7 +73,7 @@ class Authentication {
                                     this.page.waitForNavigation(),
                                     inputElement.press('Enter')
                                 ])
-                                .then(() => console.log('Authenticated.'));
+                                .then(() => logger.log('Authenticated.'));
                         })
                 }
             });

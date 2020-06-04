@@ -3,7 +3,8 @@ const Promise = require('bluebird'),
       path    = require('path');
 
 const {Authentication} = require('./challenges/authentication'),
-      ContextActions   = require('./model/context-actions');
+      ContextActions   = require('./model/context-actions'),
+      {logger}         = require('./util/logger');
 
 class Context {
     constructor(outputPath) {
@@ -12,15 +13,17 @@ class Context {
 
     capture(fileName, pattern = 'yyyy-MM-dd--HH-mm-ss') {
         let name = `${fileName}-${format(new Date(), pattern)}.png`;
+        let destination = path.resolve(this.outputPath, name);
 
         return () => {
             return Promise
                 .resolve()
                 .then(() => this.page.screenshot({
                     fullPage: true,
-                    path    : path.resolve(this.outputPath, name),
+                    path    : destination,
                     type    : 'png'
-                }));
+                }))
+                .then(() => logger.log('Screenshot was saved at ' + destination));
         };
     }
 
@@ -63,10 +66,23 @@ class Context {
         return this;
     }
 
+    isEmpty(value) {
+        return value === undefined ||
+            value === null ||
+            value === '';
+    }
+
     login(username, password, twoStep = false) {
         return () => {
             return Promise
                 .resolve()
+                .then(() => {
+                    if (this.isEmpty(username) === true) {
+                        return Promise.reject(new Error('Username is not provided.'));
+                    } else if (this.isEmpty(password) === true) {
+                        return Promise.reject(new Error('Password is not provided.'));
+                    }
+                })
                 .then(() => {
                     return new Authentication(this.page)
                         .setTwoStep(twoStep)
@@ -81,7 +97,7 @@ class Context {
 
     open(url) {
         return () => {
-            console.log('Visiting URL: ' + url);
+            logger.log('Visiting URL: ' + url);
             return this.page.goto(url, {waitUntil: ['load', 'domcontentloaded', 'networkidle2']});
         };
     }
