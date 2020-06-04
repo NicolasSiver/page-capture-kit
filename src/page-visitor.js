@@ -2,7 +2,8 @@ const Promise   = require('bluebird'),
       puppeteer = require('puppeteer');
 
 const {Context}      = require('./context'),
-      ContextActions = require('./model/context-actions');
+      ContextActions = require('./model/context-actions'),
+      {logger}       = require('./util/logger');
 
 class PageVisitor {
     constructor(outputPath) {
@@ -23,7 +24,7 @@ class PageVisitor {
                 let payload = this.createPayload();
                 let context = new Context(this.outputPath);
 
-                console.log('Visiting page. Step: ' + payload.step);
+                logger.log('Visiting page. Step: ' + payload.step);
 
                 return script.visit(payload, context.initWithPage(page));
             })
@@ -34,6 +35,11 @@ class PageVisitor {
                     case ContextActions.END:
                         return browser.close();
                 }
+            })
+            .catch(error => {
+                logger.error('Error did occur. Details: ' + error);
+                process.exitCode = 1;
+                return browser.close();
             });
     }
 
