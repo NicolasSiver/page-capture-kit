@@ -19,14 +19,18 @@ class PageVisitor {
     interactWithPage(page, script, browser) {
         return Promise
             .resolve()
-            .then(() => script.visit(this.createPayload(), new Context(this.outputPath).initWithPage(page)))
+            .then(() => {
+                let payload = this.createPayload();
+                let context = new Context(this.outputPath);
+
+                console.log('Visiting page. Step: ' + payload.step);
+
+                return script.visit(payload, context.initWithPage(page));
+            })
             .then(action => {
                 switch (action) {
                     case ContextActions.NEXT:
-                        return Promise
-                            .resolve()
-                            .then(() => page.waitForNavigation())
-                            .then(() => this.interactWithPage(page, script, browser));
+                        return this.interactWithPage(page, script, browser);
                     case ContextActions.END:
                         return browser.close();
                 }
@@ -36,7 +40,12 @@ class PageVisitor {
     executeWithScript(script) {
         return Promise
             .resolve()
-            .then(() => puppeteer.launch())
+            .then(() => {
+                return puppeteer.launch({
+                    headless       : false,
+                    defaultViewport: {width: 1920, height: 1080}
+                });
+            })
             .then(browser => {
                 return browser
                     .newPage()
