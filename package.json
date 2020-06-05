@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "An experimental tool to help with navigating sites in order to capture a deeply nested page as a screenshot.",
   "main": "./src/index.js",
+  "bin": {
+    "page-capture-kit": "./src/index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
