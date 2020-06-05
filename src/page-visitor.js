@@ -48,7 +48,7 @@ class PageVisitor {
             .resolve()
             .then(() => {
                 return puppeteer.launch({
-                    headless       : false,
+                    headless       : true,
                     defaultViewport: {width: 1920, height: 1080}
                 });
             })

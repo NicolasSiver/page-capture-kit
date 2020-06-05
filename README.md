@@ -17,6 +17,17 @@ page-capture-kit --scripts=/my/path/to/folder --output=/my/path/to/screenshots
 
 - [Motivation](#motivation)
 - [Scripts](#scripts)
+  - [Payload](#payload)
+  - [Context](#context)
+    - [`capture(filename, pattern)`](#capturefilename-pattern)
+    - [`click(selector, navigation)`](#clickselector-navigation)
+    - [`end()`](#end)
+    - [`hover(selector)`](#hoverselector)
+    - [`login(username, password)`](#loginusername-password)
+    - [`next()`](#next)
+    - [`open(url)`](#openurl)
+    - [`series(action1, action2, ..., actionX)`](#seriesaction1-action2--actionx)
+    - [`wait(condition)`](#waitcondition)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -59,3 +70,74 @@ module.exports = GoogleExample;
 # It will output PNG with Google page in the current directory where you run Page Capture Kit
 page-capture-kit --scripts=/path/to/directory/with/basic-google --output=./ 
 ```
+
+Technically scripts are JavaScript classes with a single method `visit(payload, context)`, where `payload` - is potentially useful data, and `context` to help with actions for Page Capture Kit.
+
+### Payload
+
+Simple `Object` with following properties:
+
+- `step <Number>` - every time when `visit` is invoked `step` will increase. Counting starts from `0`.
+
+### Context
+
+Abstraction around possible actions with the current web page.
+There are three actions that help with orchestration around script execution: `series()`, `next()`, and `end()`.
+You should wrap all actions with `series()`, if you want to go to the next step, use `next()`, and do not forget to use `end()` in the very end of the script.
+
+#### `capture(filename, pattern)`
+
+Parameters:
+
+- `filename <String>` - name of the screenshot
+- `pattern <String>` - the format pattern for the date part in the filename. It's powered by Date Functions, follow documentation for the [format](https://date-fns.org/v2.14.0/docs/format). Default value is `yyyy-MM-dd--HH-mm-ss`.
+
+#### `click(selector, navigation)`
+
+Parameters:
+
+- `selector <String>` - CSS selector or XPath for the element on the page
+- `navigation <Boolean>` - checks if it's necessary to wait for the navigation on the page. Useful when links are clicked and browser will load a new page. Default: `true`.
+
+#### `end()`
+
+Use it in the end of all actions for the script.
+This action will terminate browse session.
+
+#### `hover(selector)`
+
+Parameters:
+
+- `selector <String>` - CSS selector or XPath for the element on the page
+
+#### `login(username, password)`
+
+Do not store usernames and passwords in the scripts.
+Utilize environment variables. Please check [examples](./example/) directory for some ideas around credentials.
+
+Parameters:
+
+- `username <String>` - username credential for the service
+- `password <String>` - password credentials for the service
+
+#### `next()`
+
+Asks Page Capture Kit to go to the next step. 
+As a result `visit()` method in the script will be invoked with incremented `step` value.
+This technique could help to manage long and complex scripts.
+
+#### `open(url)`
+
+Parameters:
+
+- `url <String>` - fully qualified URL to visit.
+
+#### `series(action1, action2, ..., actionX)`
+
+Groups context actions in the series of actions to execute in the context of the page.
+
+#### `wait(condition)`
+
+Parameters:
+
+- `condition <String>` - it could be `selector` to wait for some element to appear on the page or it could be a timeout in milliseconds.
