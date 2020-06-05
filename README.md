@@ -15,6 +15,7 @@ page-capture-kit --scripts=/my/path/to/folder --output=/my/path/to/screenshots
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
+- [Installation](#installation)
 - [Motivation](#motivation)
 - [Scripts](#scripts)
   - [Payload](#payload)
@@ -30,6 +31,12 @@ page-capture-kit --scripts=/my/path/to/folder --output=/my/path/to/screenshots
     - [`wait(condition)`](#waitcondition)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Installation
+
+Install from the NPM: `npm install -g page-capture-kit`
+
+Or checkout this GitHub repository and link the package: `npm link`
 
 ## Motivation
 
