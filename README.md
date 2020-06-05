@@ -1,4 +1,4 @@
-# Page Capture Kit
+# <img src='./design/logo.svg' height='60' alt='Page Capture Kit Logo' />
 
 An experimental tool to help with navigating sites in order to capture a deeply nested page as a screenshot.
 This tool will allow you to capture pages that are under authentication. Page Capture Kit includes simplified logic to pre-fill forms with provided credentials.
