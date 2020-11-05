@@ -8,12 +8,10 @@ class AmazonPrimeVideo {
         );
     }
 
-    // Drill to Billing, Last Payment
+    // All payments page
     step1(context) {
         return context.series(
-            context.open('https://www.amazon.com/mc/ref=atv_set_ya_mem_edt_on_amz'),
-            context.click('//*[@id="a-page"]/div[2]/div[1]/div/div/nav/div/div[2]/div/ul/li[2]/a', false),
-            context.click('//*[@id="a-page"]/div[2]/div[1]/div/div/nav/div/div[2]/div/ul/li[2]/div/ul/li[1]/a'),
+            context.open('https://www.amazon.com/mc/payments'),
             context.capture('Amazon-Prime-Video'),
             context.end()
         )
