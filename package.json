@@ -1,6 +1,6 @@
 {
   "name": "page-capture-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An experimental tool to help with navigating sites in order to capture a deeply nested page as a screenshot.",
   "main": "./src/index.js",
   "bin": {
