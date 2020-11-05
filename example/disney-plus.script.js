@@ -11,7 +11,7 @@ class DisneyPlus {
     // Capture Billing
     step1(context) {
         return context.series(
-            context.open('https://www.disneyplus.com/account/subscription'),
+            context.open('https://www.disneyplus.com/account/billing-history'),
             context.capture('Disney-Plus'),
             context.end()
         )
